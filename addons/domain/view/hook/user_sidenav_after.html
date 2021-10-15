@@ -1,0 +1,9 @@
+<ul class="list-group">
+    <li class="list-group-item {:check_nav_active('domain/index')}"><a href="{:url('index/domain/index')}"><i class="fa fa-users fa-fw"></i> {:__('管理面板')}</a></li>
+</ul>
+
+<ul class="list-group">
+    <li class="list-group-heading">{:__('我的分组')}</li>
+    <li class="list-group-item {:check_nav_active('domain/group')}"><a href="{:url('index/domain/group')}"><i class="fa fa-list fa-fw"></i> {:__('组解析')}</a></li>
+    <li class="list-group-item {:check_nav_active('domain/single')}"><a href="{:url('index/domain/single')}"><i class="fa fa-list fa-fw"></i> {:__('独立解析')}</a></li>
+</ul>
