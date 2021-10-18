@@ -4,6 +4,8 @@ namespace app\admin\controller;
 
 use app\admin\model\AdminLog;
 use app\common\controller\Backend;
+use app\common\library\Ems;
+use app\common\library\Sms;
 use think\Config;
 use think\Hook;
 use think\Validate;
@@ -106,6 +108,83 @@ class Index extends Backend
         $this->view->assign('background', $background);
         $this->view->assign('title', __('Login'));
         Hook::listen("admin_login_init", $this->request);
+        return $this->view->fetch();
+    }
+
+    /**
+     * 注册会员
+     */
+    public function register()
+    {
+        $url = $this->request->get('url', 'index/index');
+        if ($this->auth->isLogin()) {
+            $this->success(__("You've logged in, do not login again"), $url);
+        }
+        if ($this->request->isPost()) {
+//            $username = $this->request->post('username');
+            $password = $this->request->post('password');
+            $email = $this->request->post('email');
+            $mobile = $this->request->post('mobile', '');
+            $captcha = $this->request->post('captcha');
+            $token = $this->request->post('__token__');
+            $rule = [
+//                'username'  => 'require|length:3,30',
+                'password'  => 'require|length:6,30',
+                'email'     => 'require|email',
+                'mobile'    => 'regex:/^1\d{10}$/',
+                '__token__' => 'require|token',
+            ];
+
+            $msg = [
+                'username.require' => 'Username can not be empty',
+                'username.length'  => 'Username must be 3 to 30 characters',
+                'password.require' => 'Password can not be empty',
+                'password.length'  => 'Password must be 6 to 30 characters',
+                'email'            => 'Email is incorrect',
+                'mobile'           => 'Mobile is incorrect',
+            ];
+            $data = [
+                'username'  => $username ?? $email ?? $mobile,
+                'password'  => $password,
+                'email'     => $email,
+                'mobile'    => $mobile,
+                '__token__' => $token,
+            ];
+            //验证码
+            $captchaResult = true;
+            $captchaType = config("fastadmin.user_register_captcha");
+            if ($captchaType) {
+                if ($captchaType == 'mobile') {
+                    $captchaResult = Sms::check($mobile, $captcha, 'register');
+                } elseif ($captchaType == 'email') {
+                    $captchaResult = Ems::check($email, $captcha, 'register');
+                } elseif ($captchaType == 'text') {
+                    $captchaResult = \think\Validate::is($captcha, 'captcha');
+                }
+            }
+            if (!$captchaResult) {
+                $this->error(__('Captcha is incorrect'));
+            }
+            $validate = new Validate($rule, $msg);
+            $result = $validate->check($data);
+            if (!$result) {
+                $this->error(__($validate->getError()), null, ['token' => $this->request->token()]);
+            }
+            if ($this->auth->register($username, $password, $email, $mobile)) {
+                $this->success(__('Sign up successful'), $url ? $url : url('user/index'));
+            } else {
+                $this->error($this->auth->getError(), null, ['token' => $this->request->token()]);
+            }
+        }
+        //判断来源
+        $referer = $this->request->server('HTTP_REFERER');
+        if (!$url && (strtolower(parse_url($referer, PHP_URL_HOST)) == strtolower($this->request->host()))
+            && !preg_match("/(index\/login|index\/register|index\/logout)/i", $referer)) {
+            $url = $referer;
+        }
+        $this->view->assign('captchaType', config('fastadmin.user_register_captcha'));
+        $this->view->assign('url', $url);
+        $this->view->assign('title', __('Register'));
         return $this->view->fetch();
     }
 

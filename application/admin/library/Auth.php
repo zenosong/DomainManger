@@ -3,10 +3,14 @@
 namespace app\admin\library;
 
 use app\admin\model\Admin;
+use app\common\library\Token;
+use app\common\model\User;
 use fast\Random;
 use fast\Tree;
 use think\Config;
 use think\Cookie;
+use think\Db;
+use think\Exception;
 use think\Hook;
 use think\Request;
 use think\Session;
@@ -17,6 +21,10 @@ class Auth extends \fast\Auth
     protected $requestUri = '';
     protected $breadcrumb = [];
     protected $logined = false; //登录状态
+    protected $_admin = null;
+    protected $_token = '';
+    //Token默认有效时长
+    protected $keeptime = 2592000;
 
     public function __construct()
     {
@@ -65,6 +73,97 @@ class Auth extends \fast\Auth
         Session::set("admin", $admin->toArray());
         $this->keeplogin($keeptime);
         return true;
+    }
+
+    /**
+     * 注册用户
+     *
+     * @param string $username 用户名
+     * @param string $password 密码
+     * @param string $email    邮箱
+     * @param string $mobile   手机号
+     * @param array  $extend   扩展参数
+     * @return boolean
+     */
+    public function register($username, $password, $email = '', $mobile = '', $extend = [])
+    {
+        // 检测用户名、昵称、邮箱、手机号是否存在
+        if (Admin::getByUsername($username)) {
+            $this->setError('Username already exist');
+            return false;
+        }
+        if (Admin::getByNickname($username)) {
+            $this->setError('Nickname already exist');
+            return false;
+        }
+        if ($email && Admin::getByEmail($email)) {
+            $this->setError('Email already exist');
+            return false;
+        }
+        if ($mobile && Admin::getByMobile($mobile)) {
+            $this->setError('Mobile already exist');
+            return false;
+        }
+
+        $ip = request()->ip();
+        $time = time();
+
+        $data = [
+            'username' => $username,
+            'password' => $password,
+            'email'    => $email,
+            'mobile'   => $mobile,
+            'level'    => 1,
+            'score'    => 0,
+            'avatar'   => '',
+        ];
+        $params = array_merge($data, [
+            'nickname'  => preg_match("/^1[3-9]{1}\d{9}$/",$username) ? substr_replace($username,'****',3,4) : $username,
+            'salt'      => Random::alnum(),
+            'jointime'  => $time,
+            'joinip'    => $ip,
+            'logintime' => $time,
+            'loginip'   => $ip,
+            'prevtime'  => $time,
+            'status'    => 'normal'
+        ]);
+        $params['password'] = $this->getEncryptPassword($password, $params['salt']);
+        $params = array_merge($params, $extend);
+
+        //账号注册时需要开启事务,避免出现垃圾数据
+        Db::startTrans();
+        try {
+            $admin = Admin::create($params, true);
+
+            $this->_admin = Admin::get($admin->id);
+
+            //设置Token
+            $this->_token = Random::uuid();
+            Token::set($this->_token, $admin->id, $this->keeptime);
+
+            //设置登录状态
+            $this->logined = true;
+
+            //注册成功的事件
+            Hook::listen("admin_register_successed", $this->_admin, $data);
+            Db::commit();
+        } catch (Exception $e) {
+            $this->setError($e->getMessage());
+            Db::rollback();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 获取密码加密后的字符串
+     * @param string $password 密码
+     * @param string $salt     密码盐
+     * @return string
+     */
+    public function getEncryptPassword($password, $salt = '')
+    {
+        return md5(md5($password) . $salt);
     }
 
     /**
