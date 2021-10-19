@@ -43,7 +43,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         ]
                     ],
                     onClickRow: function (row) {
-                        console.log(row);
                         $("#myTabContent2 .form-commonsearch input[name='username']").val(row.username);
                         $("#myTabContent2 .btn-refresh").trigger("click");
                     }
@@ -66,22 +65,37 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     },
                     toolbar: '#toolbar2',
                     sortName: 'id',
-                    search: false,
+                    search: true,
+                    commonSearch: false,
+                    showExport: false,
+                    showColumns: false,
+                    showToggle: false,
                     columns: [
                         [
-                            {field: 'domain', title: __('Domain')},
-                            {field: 'dns', title: __('Dns')},
-                            {field: 'channel', title: __('Channel')},
-                            {field: 'Status', title: __('Status')},
-                            {field: 'create_time', title: __('Createtime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
-                            {field: 'update_time', title: __('Updatetime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
+                            {field: 'domain', title: __('Domain'), searchable: false},
+                            {field: 'dns', title: __('Dns'), searchable: false},
+                            {field: 'channel', title: __('Channel'), searchable: false},
+                            {field: 'Status', title: __('Status'), searchable: false},
+                            {field: 'create_time', title: __('Createtime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true, searchable: false},
+                            {field: 'update_time', title: __('Updatetime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true, searchable: false},
                             {field: 'is_auto_renew', title: __('自动续费')},
                             {
                                 field: 'operate', title: __('Operate'), table: table2, events: Table.api.events.operate, buttons: [
                                 ], formatter: Table.api.formatter.operate
                             }
                         ]
-                    ]
+                    ],
+                    queryParams: function (params) {
+                        //这里可以追加搜索条件
+                        var filter = JSON.parse(params.filter);
+                        var op = JSON.parse(params.op);
+                        //这里可以动态赋值，比如从URL中获取admin_id的值，filter.admin_id=Fast.api.query('admin_id');
+                        filter.admin_id = 1;
+                        op.admin_id = "=";
+                        params.filter = JSON.stringify(filter);
+                        params.op = JSON.stringify(op);
+                        return params;
+                    },
                 });
 
                 // 为表格2绑定事件

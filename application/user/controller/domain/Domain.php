@@ -4,6 +4,11 @@ namespace app\user\controller\domain;
 
 use app\common\controller\Userend;
 use app\common\library\Auth;
+use think\Db;
+use think\Exception;
+use think\exception\PDOException;
+use think\exception\ValidateException;
+use think\Model;
 
 /**
  * 域名管理
@@ -11,6 +16,7 @@ use app\common\library\Auth;
 class Domain extends Userend
 {
 
+    /** @var Model */
     protected $model;
     protected $dataLimit = true;
 
@@ -18,7 +24,7 @@ class Domain extends Userend
     {
         parent::_initialize();
 
-        $this->model = model('common/domain/Domain');
+        $this->model = new \app\common\model\domain\Domain();
     }
 
     /**
@@ -33,7 +39,7 @@ class Domain extends Userend
             if ($this->request->request('keyField')) {
                 return $this->selectpage();
             }
-            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams(['domain', 'group_id']);
 
             $list = $this->model
                 ->with(['domainGroup', 'user'])
@@ -49,6 +55,55 @@ class Domain extends Userend
             $result = array("total" => $list->total(), "rows" => $list->items());
 
             return json($result);
+        }
+        return $this->view->fetch();
+    }
+
+    public function add()
+    {
+        if ($this->request->isPost()) {
+            $params = $this->request->post("row/a");
+            $domains = $this->request->post("domains");
+            $domains = explode("\r\n", $domains);
+            if ($params) {
+                $params = $this->preExcludeFields($params);
+                if ($this->dataLimit && $this->dataLimitFieldAutoFill) {
+                    $params[$this->dataLimitField] = $this->auth->id;
+                }
+                $result = false;
+                Db::startTrans();
+                try {
+                    //是否采用模型验证
+                    if ($this->modelValidate) {
+                        $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));
+                        $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.add' : $name) : $this->modelValidate;
+                        $this->model->validateFailException(true)->validate($validate);
+                    }
+
+                    $insertData = array_map(function ($domain) use ($params) {
+                        $params['domain'] = trim($domain);
+                        return $params;
+                    }, $domains);
+
+                    $result = $this->model->allowField(true)->saveAll($insertData);
+                    Db::commit();
+                } catch (ValidateException $e) {
+                    Db::rollback();
+                    $this->error($e->getMessage());
+                } catch (PDOException $e) {
+                    Db::rollback();
+                    $this->error($e->getMessage());
+                } catch (Exception $e) {
+                    Db::rollback();
+                    $this->error($e->getMessage());
+                }
+                if ($result !== false) {
+                    $this->success();
+                } else {
+                    $this->error(__('No rows were inserted'));
+                }
+            }
+            $this->error(__('Parameter %s can not be empty', ''));
         }
         return $this->view->fetch();
     }
