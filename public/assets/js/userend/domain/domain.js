@@ -81,21 +81,17 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             {field: 'is_auto_renew', title: __('自动续费')},
                             {
                                 field: 'operate', title: __('Operate'), table: table2, events: Table.api.events.operate, buttons: [
+                                    {
+                                        name: 'single',
+                                        title: '独立解析',
+                                        icon: 'fa fa-connectdevelop',
+                                        classname: 'btn btn-primary btn-xs btn-addtabs',
+                                        url: 'domain/record/index',
+                                    }
                                 ], formatter: Table.api.formatter.operate
                             }
                         ]
-                    ],
-                    queryParams: function (params) {
-                        //这里可以追加搜索条件
-                        var filter = JSON.parse(params.filter);
-                        var op = JSON.parse(params.op);
-                        //这里可以动态赋值，比如从URL中获取admin_id的值，filter.admin_id=Fast.api.query('admin_id');
-                        filter.admin_id = 1;
-                        op.admin_id = "=";
-                        params.filter = JSON.stringify(filter);
-                        params.op = JSON.stringify(op);
-                        return params;
-                    },
+                    ]
                 });
 
                 // 为表格2绑定事件
