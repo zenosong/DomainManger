@@ -1,4 +1,4 @@
-define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
+define(['jquery', 'bootstrap', 'userend', 'table', 'form'], function ($, undefined, Userend, Table, Form) {
 
     var Controller = {
         index: function () {

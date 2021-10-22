@@ -35,6 +35,8 @@ return [
     'More'                                        => '更多',
     'Normal'                                      => '正常',
     'Hidden'                                      => '隐藏',
+    'Enabled'                                     => '启用',
+    'Disabled'                                    => '禁用',
     'Submit'                                      => '提交',
     'Reset'                                       => '重置',
     'Execute'                                     => '执行',

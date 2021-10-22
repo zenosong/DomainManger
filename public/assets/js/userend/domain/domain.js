@@ -1,4 +1,4 @@
-define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
+define(['jquery', 'bootstrap', 'userend', 'table', 'form'], function ($, undefined, Userend, Table, Form) {
 
     var Controller = {
         index: function () {
@@ -22,6 +22,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     },
                     toolbar: '#toolbar1',
                     sortName: 'id',
+                    sortOrder: 'asc',
                     search: false,
                     showHeader: false,
                     showFooter: false,
@@ -36,15 +37,20 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         [
                             {field: 'name', title: __('Nickname'), searchable: false},
                             {
-                                field: 'operate', title: __('Operate'), table: table1, events: Table.api.events.operate, buttons: [
-
-                                ], formatter: Table.api.formatter.operate
+                                field: 'operate',
+                                title: __('Operate'),
+                                table: table1,
+                                events: Table.api.events.operate,
+                                buttons: [],
+                                formatter: Table.api.formatter.operate
                             }
                         ]
                     ],
-                    onClickRow: function (row) {
-                        $("#myTabContent2 .form-commonsearch input[name='username']").val(row.username);
-                        $("#myTabContent2 .btn-refresh").trigger("click");
+                    onClickRow: Controller.api.methods.onClickRow,
+                    onLoadSuccess: function (data) {
+                        if (data.rows) {
+                            Controller.api.methods.onClickRow(data.rows.filter(i => i.is_default === 1)[0]);
+                        }
                     }
                 });
 
@@ -76,11 +82,31 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             {field: 'dns', title: __('Dns'), searchable: false},
                             {field: 'channel', title: __('Channel'), searchable: false},
                             {field: 'Status', title: __('Status'), searchable: false},
-                            {field: 'create_time', title: __('Createtime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true, searchable: false},
-                            {field: 'update_time', title: __('Updatetime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true, searchable: false},
+                            {
+                                field: 'create_time',
+                                title: __('Createtime'),
+                                formatter: Table.api.formatter.datetime,
+                                operate: 'RANGE',
+                                addclass: 'datetimerange',
+                                sortable: true,
+                                searchable: false
+                            },
+                            {
+                                field: 'update_time',
+                                title: __('Updatetime'),
+                                formatter: Table.api.formatter.datetime,
+                                operate: 'RANGE',
+                                addclass: 'datetimerange',
+                                sortable: true,
+                                searchable: false
+                            },
                             {field: 'is_auto_renew', title: __('自动续费')},
                             {
-                                field: 'operate', title: __('Operate'), table: table2, events: Table.api.events.operate, buttons: [
+                                field: 'operate',
+                                title: __('Operate'),
+                                table: table2,
+                                events: Table.api.events.operate,
+                                buttons: [
                                     {
                                         name: 'single',
                                         title: '独立解析',
@@ -88,7 +114,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         classname: 'btn btn-primary btn-xs btn-addtabs',
                                         url: 'domain/record/index',
                                     }
-                                ], formatter: Table.api.formatter.operate
+                                ],
+                                formatter: Table.api.formatter.operate
                             }
                         ]
                     ]
@@ -110,8 +137,29 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
         api: {
             bindevent: function () {
                 Form.api.bindevent($("form[role=form]"));
+            },
+            methods: {
+                onClickRow: function (row) {
+                    console.log(row);
+                    // 表格2
+                    let table2 = $("#table2");
+                    let options = table2.bootstrapTable('getOptions');
+                    let queryParams = options.queryParams;
+                    options.pageNumber = 1;
+                    options.queryParams = function (params) {
+                        params = queryParams(params);
+
+                        //如果希望忽略搜索栏搜索条件,可使用
+                        params.filter = JSON.stringify({group_id: row.id});
+                        params.op = JSON.stringify({group_id: '='});
+                        params.search = '';
+                        return params;
+                    };
+                    table2.bootstrapTable('refresh', {});
+                }
             }
-        }
+        },
+
     };
     return Controller;
 });

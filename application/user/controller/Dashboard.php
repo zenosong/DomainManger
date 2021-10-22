@@ -3,6 +3,7 @@
 namespace app\user\controller;
 
 use app\common\controller\Userend;
+use app\common\model\domain\Domain;
 
 /**
  * 控制台
@@ -28,6 +29,10 @@ class Dashboard extends Userend
             $paylist[$day] = mt_rand(1, mt_rand(1, $createlist[$day]));
         }
         $hooks = config('addons.hooks');
+
+        $domainNum = Domain::where('user_id', $this->auth->getUser()->id)->count();
+
+
         $uploadmode = isset($hooks['upload_config_init']) && $hooks['upload_config_init'] ? implode(',', $hooks['upload_config_init']) : 'local';
         $this->view->assign([
             'totaluser' => 35200,

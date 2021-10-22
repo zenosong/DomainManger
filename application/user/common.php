@@ -179,7 +179,7 @@ if (!function_exists('build_heading')) {
             $path = strtolower($controller . ($action && $action != 'index' ? '/' . $action : ''));
         }
         // 根据当前的URI自动匹配父节点的标题和备注
-        $data = Db::name('auth_rule')->where('name', $path)->field('title,remark')->find();
+        $data = Db::name('user_rule')->where('name', $path)->field('title,remark')->find();
         if ($data) {
             $title = __($data['title']);
             $content = __($data['remark']);

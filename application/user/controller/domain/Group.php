@@ -4,6 +4,7 @@ namespace app\user\controller\domain;
 
 use app\common\controller\Userend;
 use app\common\library\Auth;
+use think\Model;
 
 /**
  * 分组管理
@@ -11,6 +12,7 @@ use app\common\library\Auth;
 class Group extends Userend
 {
 
+    /** @var Model */
     protected $model;
     protected $dataLimit = true;
 
@@ -18,7 +20,7 @@ class Group extends Userend
     {
         parent::_initialize();
 
-        $this->model = model('common/domain/Group');
+        $this->model = new \app\common\model\domain\Group();
     }
 
     public function index()

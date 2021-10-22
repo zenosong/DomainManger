@@ -1,0 +1,84 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Product name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-name" data-rule="required" class="form-control" name="row[name]" type="text" value="{$row.name|htmlentities}">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Product code')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-code" data-rule="required" class="form-control" name="row[code]" type="text" value="{$row.code|htmlentities}">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('扩展属性')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <dl class="fieldlist" data-template="extend_tpl" data-name="row[extend]">
+                <dd>
+                    <ins>{:__('Name')}</ins>
+                    <ins>{:__('Code')}</ins>
+                    <ins>{:__('Value')}</ins>
+                </dd>
+                <dd><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></dd>
+                <!--请注意 dd和textarea间不能存在其它任何元素，实际开发中textarea应该添加个hidden进行隐藏-->
+                <textarea name="row[extend]" class="form-control" cols="30" rows="5">{$row.extend|array_values|json_encode}</textarea>
+            </dl>
+            <script id="extend_tpl" type="text/html">
+                <dd class="form-inline">
+                    <ins><input type="text" name="<%=name%>[<%=index%>][name]" class="form-control" value="<%=row.name%>" placeholder="名称"/></ins>
+                    <ins><input type="text" name="<%=name%>[<%=index%>][code]" class="form-control" value="<%=row.code%>" placeholder="编码"/></ins>
+                    <ins><input type="number" name="<%=name%>[<%=index%>][value]" class="form-control" value="<%=row.value%>" placeholder="值"/></ins>
+                    <!--下面的两个按钮务必保留-->
+                    <span class="btn btn-sm btn-danger btn-remove"><i class="fa fa-times"></i></span>
+                    <span class="btn btn-sm btn-primary btn-dragsort"><i class="fa fa-arrows"></i></span>
+                </dd>
+            </script>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('规格型号')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <dl class="fieldlist" data-template="models_tpl" data-name="row[models]">
+                <dd>
+                    <ins>{:__('Name')}</ins>
+                    <ins>{:__('Code')}</ins>
+                    <ins>{:__('Price')}</ins>
+                </dd>
+                <dd><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></dd>
+                <!--请注意 dd和textarea间不能存在其它任何元素，实际开发中textarea应该添加个hidden进行隐藏-->
+                <textarea name="row[models]" class="form-control" cols="30" rows="5">{$row.models|json_encode}</textarea>
+            </dl>
+            <script id="models_tpl" type="text/html">
+                <dd class="form-inline">
+                    <input type="hidden" name="<%=name%>[<%=index%>][id]" class="form-control" value="<%=row.id%>" />
+                    <ins><input type="text" name="<%=name%>[<%=index%>][name]" class="form-control" value="<%=row.name%>" /></ins>
+                    <ins><input type="text" name="<%=name%>[<%=index%>][code]" class="form-control" value="<%=row.code%>" /></ins>
+                    <ins><input type="number" name="<%=name%>[<%=index%>][price]" class="form-control" value="<%=row.price%>" /></ins>
+                    <!--下面的两个按钮务必保留-->
+                    <span class="btn btn-sm btn-danger btn-remove"><i class="fa fa-times"></i></span>
+                    <span class="btn btn-sm btn-primary btn-dragsort"><i class="fa fa-arrows"></i></span>
+                </dd>
+            </script>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_radios('row[status]', [__('Disabled'), __('Enabled')], 1)}
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

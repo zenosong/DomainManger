@@ -1,4 +1,4 @@
-define(['jquery', 'bootstrap', 'userend', 'table', 'form'], function ($, undefined, Userend, Table, Form) {
+define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
 
     var Controller = {
         index: function () {
@@ -7,16 +7,16 @@ define(['jquery', 'bootstrap', 'userend', 'table', 'form'], function ($, undefin
 
             let table = $("#table");
             table.bootstrapTable({
-                url: 'domain/record',
+                url: 'product/index',
                 extend: {
-                    index_url: 'domain/record/index',
-                    add_url: 'domain/record/add',
-                    edit_url: 'domain/record/edit',
-                    del_url: 'domain/record/del',
-                    table: 'record',
+                    index_url: 'product/index',
+                    add_url: 'product/add',
+                    edit_url: 'product/edit',
+                    table: 'product',
                 },
                 toolbar: '#toolbar',
                 sortName: 'id',
+                sortOrder: 'asc',
                 search: true,
                 commonSearch: false,
                 showToggle: false,
@@ -24,15 +24,12 @@ define(['jquery', 'bootstrap', 'userend', 'table', 'form'], function ($, undefin
                 showColumns: false,
                 columns: [
                     [
-                        {field: 'host', title: __('Host')},
-                        {field: 'type', title: __('Type')},
-                        {field: 'value', title: __('Value')},
-                        {field: 'weight', title: __('Weight')},
-                        {field: 'mx_level', title: __('MX Level')},
-                        {field: 'ttl', title: __('TTL')},
-                        {field: 'status', title: __('Status')},
-                        {field: 'create_time', title: __('Create time')},
-                        {field: 'update_time', title: __('Update time')},
+                        {field: 'name', title: __('Product name')},
+                        {field: 'extend.domain_num.value', title: __('Domain num')},
+                        {field: 'models.0.price', title: __('Month')},
+                        {field: 'models.1.price', title: __('Quarter')},
+                        {field: 'models.2.price', title: __('Year')},
+                        {field: 'status', title: __('Status'), operate: false, formatter: Table.api.formatter.status, searchList: {'1': __('Enabled'), '0': __('Disabled')}},
                         {
                             field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, buttons: [
 

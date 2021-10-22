@@ -124,7 +124,7 @@ class Userend extends Controller
         $this->controllername = strtolower($this->request->controller());
         $this->actionname = strtolower($this->request->action());
 
-        $path = $this->controllername . '/' . $this->actionname;
+        $path = str_replace('.', '/', $this->controllername) . '/' . $this->actionname;
 
         // 定义是否Addtabs请求
         !defined('IS_ADDTABS') && define('IS_ADDTABS', input("addtabs") ? true : false);

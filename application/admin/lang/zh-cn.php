@@ -50,6 +50,8 @@ return [
     'No'                                                    => '否',
     'Normal'                                                => '正常',
     'Hidden'                                                => '隐藏',
+    'Enabled'                                               => '启用',
+    'Disabled'                                              => '禁用',
     'Locked'                                                => '锁定',
     'Submit'                                                => '提交',
     'Reset'                                                 => '重置',
