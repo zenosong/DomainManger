@@ -298,4 +298,32 @@ class Config extends Backend
         $fieldList = Db::query($sql, [$dbname, $table]);
         $this->success("", null, ['fieldList' => $fieldList]);
     }
+
+    public function getList()
+    {
+        $group = $this->request->request("group");
+
+        $list = $this->model->where('group', $group)->select();
+        $return = [];
+        foreach ($list as $k => $v) {
+            $value = $v->toArray();
+            $value['title'] = __($value['title']);
+            if (in_array($value['type'], ['select', 'selects', 'checkbox', 'radio'])) {
+                $value['value'] = explode(',', $value['value']);
+            }
+            $value['content'] = json_decode($value['content'], true);
+            if (in_array($value['name'], ['categorytype', 'configgroup', 'attachmentcategory'])) {
+                $dictValue = (array)json_decode($value['value'], true);
+                foreach ($dictValue as $index => &$item) {
+                    $item = __($item);
+                }
+                unset($item);
+                $value['value'] = json_encode($dictValue, JSON_UNESCAPED_UNICODE);
+            }
+            $value['tip'] = htmlspecialchars($value['tip']);
+            $return[] = $value;
+        }
+
+        $this->success('', null, ['rows' => $return]);
+    }
 }

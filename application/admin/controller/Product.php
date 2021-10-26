@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use app\common\controller\Backend;
 use app\common\model\Category as CategoryModel;
+use app\common\model\Config;
 use Exception;
 use fast\Tree;
 use think\Db;
@@ -50,6 +51,32 @@ class Product extends Backend
 
             return json($result);
         }
+
+        $configModel = new Config();
+
+        $list = $configModel->whereIn('group', ['user', 'email'])->select();
+        $configList = [];
+        foreach ($list as $k => $v) {
+            $value = $v->toArray();
+            $value['title'] = __($value['title']);
+            if (in_array($value['type'], ['select', 'selects', 'checkbox', 'radio'])) {
+                $value['value'] = explode(',', $value['value']);
+            }
+            $value['content'] = json_decode($value['content'], true);
+            if (in_array($value['name'], ['categorytype', 'configgroup', 'attachmentcategory'])) {
+                $dictValue = (array)json_decode($value['value'], true);
+                foreach ($dictValue as $index => &$item) {
+                    $item = __($item);
+                }
+                unset($item);
+                $value['value'] = json_encode($dictValue, JSON_UNESCAPED_UNICODE);
+            }
+            $value['tip'] = htmlspecialchars($value['tip']);
+            $configList[$v['group']]['list'][] = $value;
+        }
+
+
+        $this->view->assign('configList', $configList);
 
         return $this->view->fetch();
     }

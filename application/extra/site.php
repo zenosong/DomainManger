@@ -41,6 +41,11 @@ return array (
     'category2' => 'Category2',
     'custom' => 'Custom',
   ),
-  'buy_link' => '',
-  'commission' => '',
+  'buy_link' => 'https://www.zhihu.com/',
+  'commission' => '33',
+  'content_forget_password' => '会员{username}
+您好，您通过网站进行找回密码，前往重设链接：{restpasswordurl}
+如果非本人发起，请忽略本邮件，并告知管理员',
+  'content_product_expire' => '会员{username}
+您好，您的会员有效期即将过期，请前往官网登录：{url}',
 );

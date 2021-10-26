@@ -1,4 +1,4 @@
-define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
+define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template'], function ($, undefined, Backend, Table, Form, Template) {
 
     var Controller = {
         index: function () {
@@ -44,6 +44,14 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
             // 为表格1绑定事件
             Table.api.bindevent(table);
+
+            $("form.edit-form").data("validator-options", {
+                display: function (elem) {
+                    return $(elem).closest('tr').find("td:first").text();
+                }
+            });
+            Form.api.bindevent($("form.edit-form"));
+
         },
         add: function () {
             Controller.api.bindevent();
