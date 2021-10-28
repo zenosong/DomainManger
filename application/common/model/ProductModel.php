@@ -16,4 +16,12 @@ class ProductModel Extends Model
         'create_time' => 'timestamp',
         'update_time' => 'timestamp',
     ];
+
+    const STATUS_ENABLED = 1;
+    const STATUS_DISABLED = 0;
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
 }

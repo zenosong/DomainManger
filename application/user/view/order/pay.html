@@ -1,0 +1,77 @@
+<form id="pay-form" class="form-horizontal" role="form" data-toggle="validator" method="POST"
+      action="order/pay/ids/{$row.id}">
+    {:token()}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th width="20%"></th>
+            <th width="60%"></th>
+            <th width="20%"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>付费账号：</td>
+            <td>{$row.user.username}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>购买内容：</td>
+            <td>{$row.product.name}-{$row.product_model.name}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>服务周期：</td>
+            <td>{:date('Y-m-d')} ~ {$row.product_expire_time}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>支付金额：</td>
+            <td>{$row.amount}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>支付方式：</td>
+            <td>
+                <div class="row">
+                    <div class="col-sm-8 col-xs-12">
+                        <div class="form-inline">
+                            <div id="pay-type-group" class="btn-group" role="group" aria-label="...">
+                                <button type="button" id="card" class="btn btn-info active">{:__('卡密支付')}</button>
+                                <button type="button" id="recharge" class="btn btn-info">{:__('余额支付')}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td></td>
+        </tr>
+        <tr class="card-form">
+            <td>卡号：</td>
+            <td>
+                <input type="text" name="card[number]" value="" class="form-control" data-tip="请输入卡号" data-rule="require"/>
+            </td>
+            <td></td>
+        </tr>
+        <tr class="card-form">
+            <td>密码：</td>
+            <td>
+                <input type="text" name="card[password]" value="" class="form-control" data-tip="请输入密码" data-rule="require"/>
+            </td>
+            <td></td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <td></td>
+            <td>
+                <input type="hidden" name="pay_type" id="pay_type" value="card">
+                <button type="submit" class="btn btn-success btn-embossed">{:__('OK')}</button>
+                <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        </tfoot>
+    </table>
+</form>

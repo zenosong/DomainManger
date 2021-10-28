@@ -1,0 +1,142 @@
+<style>
+    .tab-content > .chart {
+        padding: 10px;
+    }
+
+    .small-box {
+        min-height: 120px;
+    }
+
+    .small-box .box-title {
+        font-size: 30px;
+        font-weight: bold;
+        margin: 0 0 10px 0;
+        white-space: nowrap;
+        padding: 0;
+    }
+
+    .thumbnail {
+        min-height: 160px;
+    }
+
+    .thumbnail .caption {
+        min-height: 100px;
+    }
+
+    .thumbnail .footer {
+        padding: 9px;
+    }
+</style>
+
+
+<div class="panel panel-default panel-intro">
+    <div class="panel-body">
+        <div class="row">
+            <h2 class="col-lg-12 col-xs-12 page-header">
+                <span><small class="text-primary">当前套餐: {$currentPackage['product']['name']}</small></span>
+                <span style="margin-left: 15px"><small class="text-primary">有效期: {$currentPackage['expire_time']}</small></span>
+                <span style="margin-left: 15px"><button type="button" class="btn btn-info">{:__('历史订单')}</button></span>
+            </h2>
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-aqua">
+                    <div class="inner">
+                        <span class="box-title">150</span>
+
+                        <p>已接管域名</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-shopping-cart"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <span class="box-title">110</span>
+
+                        <p>总数量</p>
+                        <p>套餐数量 100 + 叠加包 10</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-area-chart"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-yellow">
+                    <div class="inner">
+                        <span class="box-title">2021-11-11</span>
+
+                        <p>有效期</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-red">
+                    <div class="inner">
+                        <span class="box-title">￥65</span>
+
+                        <p>钱包余额</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-diamond"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- ./col -->
+        </div>
+        <div class="row">
+            {foreach name="productList" id="item"}
+            {if $item['code'] != 'single'}
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="thumbnail">
+                    <div class="caption">
+                        <h4>{$item['name']}</h4>
+                        {foreach name="item['extend']" id="extend"}
+                        <p class="text-muted">{$extend['name']}：{$extend['value']}</p>
+                        {/foreach}
+                    </div>
+                    {if $item['price'] > 0}
+                    <div class="footer">
+                        <a href="#" class="btn btn-primary btn-success package-pay" data-id="{$item['models']['month']['id']}"><i class="fa fa-diamond"></i>
+                            {$item['models']['month']['id'] == $currentPackage['product_model_id'] ? '续费':'开通'}</a>
+                        <span style="margin-left: 15px">{$item['models']['month']['price']}元/月</span>
+                    </div>
+                    {/if}
+                </div>
+            </div>
+            {/if}
+            {/foreach}
+            <!-- ./col -->
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-xs-12">
+            <form id="buy-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="order/create">
+                <input name="product_model_id" type="hidden" value="{$productList['single']['models']['month']['id']??''}">
+                <div class="form-group col-lg-12 col-xs-12 page-header">
+                    <span>购买叠加域名管理</span>
+                    <span style="margin-left: 15px">
+                        <input id="c-product_num" class="" name="product_num" type="number" value="1">
+                    </span>
+                    <span style="margin-left: 15px">3.0元/月/条</span>
+                    <span style="margin-left: 15px"><button type="submit" class="btn btn-info">{:__('支付')}</button></span>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+<!-- Main row -->
+<!-- /.row (main row) -->

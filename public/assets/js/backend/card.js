@@ -24,12 +24,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'id', title: __('Id')},
-                        {field: 'number', title: __('Number'), operate: 'LIKE'},
+                        {field: 'number', title: __('卡号'), operate: 'LIKE'},
                         {field: 'password', title: __('Password'), operate: 'LIKE'},
                         {field: 'amount', title: __('Amount'), operate: 'LIKE'},
                         {field: 'status', title: __('Status')},
-                        {field: 'use_time', title: __('Use_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
-                        {field: 'user_id', title: __('User_id')},
+                        {field: 'use_time', title: __('消费时间'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
+                        {field: 'user.username', title: __('消费会员')},
                         {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'update_time', title: __('Update_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
