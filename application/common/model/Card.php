@@ -52,18 +52,7 @@ class Card extends Model
                 $r = $row->save();
                 if ($r) {
                     $surplusAmount = $row->amount - $amount;
-                    $moneyLog = MoneyLog::create([
-                        'user_id'  => $row->user_id,
-                        'order_id' => $orderId,
-                        'money'    => $surplusAmount,
-                        'before'   => $user->money,
-                        'after'    => $user->money + $surplusAmount,
-                        'memo'     => '卡密余额'
-                    ]);
-                    $user->money = $moneyLog->after;
-                    $user->save();
-
-                    return true;
+                    return User::money($surplusAmount, $user->id, '卡密余额');
                 } else {
                     throw new Exception('支付异常，请联系管理员');
                 }
